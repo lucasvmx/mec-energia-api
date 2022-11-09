@@ -27,7 +27,6 @@ class Contract(models.Model):
 
     start_date = models.DateField(
         default=datetime.date.today,
-        unique=True,
         null=False,
         blank=False
     )
