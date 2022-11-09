@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from datetime import date
 
 from .utils import EnergyBillsDates
-from contracts.models import EnergyBill
+from contracts.models import Contract, EnergyBill
 
 class University(models.Model):
     name = models.CharField(
@@ -28,6 +28,33 @@ class University(models.Model):
         verbose_name=_('CNPJ'),
         help_text=_('14 números sem caracteres especiais')
     )
+
+    def create_consumer_unit_and_contract(self, data_consumer_unit, data_contract):
+        created_consumer_unit = None
+
+        try:
+            created_consumer_unit = ConsumerUnit.objects.create(
+                university = self,
+                name = data_consumer_unit['name'],
+                code = data_consumer_unit['code'],
+                is_active = data_consumer_unit['is_active'],
+            )
+
+            Contract.objects.create(
+                consumer_unit = created_consumer_unit,
+                start_date = data_contract['start_date'],
+                end_date = data_contract['end_date'],
+                tariff_flag = data_contract['tariff_flag'],
+                sub_group = data_contract['sub_group'],
+                supply_voltage = data_contract['supply_voltage'],
+                peak_contracted_demand_in_kw = data_contract['peak_contracted_demand_in_kw'],
+                off_peak_contracted_demand_in_kw = data_contract['off_peak_contracted_demand_in_kw'],
+            )
+        except Exception as error:
+            if created_consumer_unit:
+                created_consumer_unit.delete()
+
+            raise Exception(str(error))
 
 
 class ConsumerUnit(models.Model):
