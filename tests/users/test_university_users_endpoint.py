@@ -1,8 +1,8 @@
 import json
 import pytest
+from datetime import date
 from rest_framework import status
 from rest_framework.test import APIClient
-from datetime import date
 
 from users.models import UniversityUser
 from universities.models import ConsumerUnit, University
@@ -105,7 +105,29 @@ class TestUsersEndpoint:
         response = self._add_to_favorite_request(endpoint, non_existent_consumer_unit_id)
         
         assert status.HTTP_404_NOT_FOUND == response.status_code
+    
+    def test_rejects_request_with_missing_fields(self):
+        endpoint = f'{ENDPOINT}{self.user.id}/favorite-consumer-units/'
 
+        response = self.client.post(endpoint, {})
+        error = json.loads(response.content)
+
+        assert status.HTTP_400_BAD_REQUEST == response.status_code
+        assert 'This field is required' in error['consumer_unit_id'][0]
+        assert 'This field is required' in error['action'][0]
+            
+    def test_rejects_request_with_wrong_action_value(self):
+        endpoint = f'{ENDPOINT}{self.user.id}/favorite-consumer-units/'
+
+        response = self.client.post(endpoint, {
+            'consumer_unit_id': self.consumer_units[0].id,
+            'action': 'wrong action'
+        })
+        error = json.loads(response.content)
+
+        assert status.HTTP_400_BAD_REQUEST == response.status_code
+        assert '"wrong action" is not a valid choice' in error['action'][0]
+            
     def _add_to_favorite_request(self, endpoint: str, consumer_unit_id: str):
         return self.client.post(endpoint, 
             {'consumer_unit_id': consumer_unit_id, 'action': 'add'})

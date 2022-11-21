@@ -130,9 +130,12 @@ class EnergyBill(models.Model):
 
     @classmethod
     def get_energy_bill(cls, consumer_unit_id, month, year):
-        energy_bill = cls.objects.all().filter(
-            consumer_unit=consumer_unit_id,
-            date__month=month,
-            date__year=year)
+        try:
+            energy_bill = cls.objects.get(
+                consumer_unit=consumer_unit_id,
+                date__month=month,
+                date__year=year)
 
-        return energy_bill
+            return energy_bill
+        except:
+            return None

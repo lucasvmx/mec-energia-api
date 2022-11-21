@@ -1,10 +1,10 @@
 from django.db import models
-from mec_energia import settings
 from django.utils.translation import gettext_lazy as _
 from datetime import date
 
-from .utils import EnergyBillsDates
 from contracts.models import Contract, EnergyBill
+from .recommendation import Recommendation
+from utils.energy_bill_util import EnergyBillUtils
 
 class University(models.Model):
     name = models.CharField(
@@ -88,6 +88,9 @@ class ConsumerUnit(models.Model):
 
     created_on = models.DateField(auto_now_add=True)
 
+    @property
+    def current_contract(self):
+        return self.contract_set.all().order_by('start_date').last()
 
     @property
     def oldest_contract(self):
@@ -95,7 +98,7 @@ class ConsumerUnit(models.Model):
 
     @property
     def date(self):
-        if not self.oldest_contract:
+        if not self.current_contract:
             return 'Unidade Consumidora sem Contrato'
         
         return self.oldest_contract.start_date
@@ -112,21 +115,58 @@ class ConsumerUnit(models.Model):
 
     @property
     def pending_energy_bills_number(self):
-        if not self.oldest_contract:
+        if not self.current_contract:
             return 'Unidade Consumidora sem Contrato'
 
-        energy_bills = EnergyBillsDates.generate_dates_of_consumer_unit(self.date)
-
         pending_bills_number = 0
+        energy_bills = self.get_energy_bills_for_recommendation()
+        
         for energy_bill in energy_bills:
-            if not EnergyBill.get_energy_bill(
-                self.id,
-                energy_bill['month'], 
-                energy_bill['year']):
-                
+            if energy_bill['energy_bill'] == None:
                 pending_bills_number += 1
 
         return pending_bills_number
+
+    def get_energy_bills_for_recommendation(self):
+        if not self.current_contract:
+            return 'Unidade Consumidora sem Contrato'
+
+        energy_bills = Recommendation.get_energy_bills_for_recommendation(self.id)
+
+        return energy_bills
+
+    def get_energy_bills_by_year(self, year):
+        if year < self.date.year or year > date.today().year:
+            raise Exception('Consumer User do not have Energy Bills this year')
+
+        energy_bills_dates = EnergyBillUtils.generate_dates_by_year(year)
+        
+        for object in energy_bills_dates:
+            object['energy_bill'] = None
+
+            energy_bill = EnergyBill.get_energy_bill(
+                self.id,
+                object['month'], 
+                object['year'])
+            
+            if energy_bill:
+                object['energy_bill'] = EnergyBillUtils.energy_bill_dictionary(energy_bill)
+
+        return list(energy_bills_dates)
+    
+    def get_energy_bills_pending(self):
+        if not self.current_contract:
+            return 'Unidade Consumidora sem Contrato'
+
+        energy_bills_pending = []
+            
+        energy_bills = self.get_energy_bills_for_recommendation()
+
+        for energy_bill in energy_bills:
+            if energy_bill['energy_bill'] == None:
+                energy_bills_pending.append(energy_bill)
+
+        return list(energy_bills_pending)
 
 
     def __repr__(self) -> str:

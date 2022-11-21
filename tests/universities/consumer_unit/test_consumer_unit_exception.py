@@ -3,7 +3,6 @@ import pytest
 from django.db.models import ProtectedError
 from universities.models import University, ConsumerUnit
 
-
 @pytest.mark.django_db
 def test_throws_exception_when_deleting_university():
     university = University.objects.create(

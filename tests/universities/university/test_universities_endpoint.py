@@ -3,28 +3,21 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from users.models import UniversityUser
-from universities.models import University
-
 ENDPOINT = '/api/universities/'
-EMAIL = 'admin@admin.com'
-PASSWORD = 'password'
 
+from tests.test_utils.university_test_utils.create_university_test_util import CreateUniversityTestUtil
+from tests.test_utils.create_objects_util import CreateObjectsUtil
 
 @pytest.mark.django_db
 class TestUniversitiesEndpoint:
     def setup_method(self):
+        self.university, self.user = CreateObjectsUtil.create_university_and_user()
+        
         self.client = APIClient()
-        self.existing_university_dict = {
-            'name': 'Universidade de São Paulo',
-            'cnpj': '63025530000104'
-        }
-        self.existing_university = University(**self.existing_university_dict)
-        self.existing_university.save()
+        self.client.login(
+            email = CreateObjectsUtil.login_university_user['email'], 
+            password = CreateObjectsUtil.login_university_user['password'])
 
-        self.user = UniversityUser.objects.create_user(
-            email=EMAIL, password=PASSWORD, university=self.existing_university)
-        self.client.login(email=EMAIL, password=PASSWORD)
         self.university_to_be_created = {
             'name': 'Universidade de Brasília',
             'cnpj': '00038174000143'
@@ -47,12 +40,12 @@ class TestUniversitiesEndpoint:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_rejects_attempt_to_delete_university(self):
-        response = self.client.delete(ENDPOINT, self.existing_university_dict)
+        response = self.client.delete(ENDPOINT, CreateUniversityTestUtil.university_dict)
 
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
     def test_rejects_attempt_to_delete_university_by_id(self):
-        delete_endpoint = f'{ENDPOINT}{self.existing_university.id}/'
+        delete_endpoint = f'{ENDPOINT}{self.university.id}/'
         response = self.client.delete(delete_endpoint)
 
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED

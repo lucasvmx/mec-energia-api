@@ -1,4 +1,4 @@
-from rest_framework.serializers import HyperlinkedModelSerializer
+from rest_framework.serializers import HyperlinkedModelSerializer, Serializer
 from rest_framework import serializers
 
 from universities.serializers import ConsumerUnitSerializer
@@ -29,3 +29,7 @@ class RetrieveUniversityUserSerializer(HyperlinkedModelSerializer):
         model = UniversityUser
         fields = ['id', 'url', 'first_name', 'last_name', 'password',
                   'email', 'university', 'favorite_consumer_units']
+
+class FavoriteConsumerUnitActionSerializer(Serializer):
+    action = serializers.ChoiceField(allow_blank=False, choices=['remove', 'add'])
+    consumer_unit_id = serializers.IntegerField()
