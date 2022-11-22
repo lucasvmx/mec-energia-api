@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('start_date', models.DateField(default=datetime.date.today, unique=True)),
                 ('end_date', models.DateField(blank=True, null=True)),
                 ('tariff_flag', models.CharField(blank=True, choices=[('V', 'Verde'), ('A', 'Azul')], max_length=1, null=True)),
-                ('sub_group', models.CharField(blank=True, choices=[('A1', '≥ 230 kV'), ('A2', 'de 88 kV a 138 kV'), ('A3', 'de 69 kV'), ('A3a', 'de 30 kV a 44 kV'), ('A4', 'de 2,3 kV a 25 kV'), ('AS', '< a 2,3 kV, a partir de sistema subterrâneo de distribuição')], max_length=3, null=True)),
+                ('subgroup', models.CharField(blank=True, choices=[('A1', '≥ 230 kV'), ('A2', 'de 88 kV a 138 kV'), ('A3', 'de 69 kV'), ('A3a', 'de 30 kV a 44 kV'), ('A4', 'de 2,3 kV a 25 kV'), ('AS', '< a 2,3 kV, a partir de sistema subterrâneo de distribuição')], max_length=3, null=True)),
                 ('supply_voltage', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
                 ('peak_contracted_demand_in_kw', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
                 ('off_peak_contracted_demand_in_kw', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),

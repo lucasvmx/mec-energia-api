@@ -19,12 +19,18 @@ class CreateObjectsUtil:
 
         return (university, user)
 
-    def create_consumer_unit_object(consumer_unit_dict_index, university):
+    def create_consumer_unit_object(university, consumer_unit_dict_index = None):
+        if not consumer_unit_dict_index:
+            consumer_unit_dict_index = 0
+
         consumer_unit_dict, consumer_unit = CreateConsumerUnitTestUtil.create_consumer_unit(consumer_unit_dict_index, university)
 
         return (consumer_unit_dict, consumer_unit)
 
-    def create_contract_object(contract_dict_index, consumer_unit):
+    def create_contract_object(consumer_unit, contract_dict_index = None):
+        if not contract_dict_index:
+            contract_dict_index = 0
+
         contract = CreateContractTestUtil.create_contract(contract_dict_index, consumer_unit)
 
         return contract

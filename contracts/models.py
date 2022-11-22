@@ -1,20 +1,24 @@
 from django.db import models
 import datetime
 
-class Contract(models.Model):
+from utils.subgroup_util import Subgroup
 
-    cod_tariff_flag = (
+class ContractManager(models.Manager):
+    def create(self, *args, **kwargs):
+        try:
+            kwargs['subgroup'] = Subgroup.get_subgroup(kwargs['supply_voltage'])
+            obj = super().create(*args, **kwargs)
+            
+            return obj
+        except Exception as error:
+            raise Exception(str(error))
+
+class Contract(models.Model):
+    objects = ContractManager()
+
+    tariff_flag_choices = (
         ('V', 'Verde'),
         ('A', 'Azul'),
-    )
-
-    cod_sub_group = (
-        ('A1', '≥ 230 kV'),
-        ('A2', 'de 88 kV a 138 kV'),
-        ('A3', 'de 69 kV'),
-        ('A3a', 'de 30 kV a 44 kV'),
-        ('A4', 'de 2,3 kV a 25 kV'),
-        ('AS', '< a 2,3 kV, a partir de sistema subterrâneo de distribuição'),
     )
 
     # TODO: - OneToOneField:
@@ -37,14 +41,13 @@ class Contract(models.Model):
     )
     
     tariff_flag = models.CharField( 
-        choices=cod_tariff_flag,
+        choices=tariff_flag_choices,
         max_length=1,
         null=True,
         blank=True
     )
 
-    sub_group = models.CharField(
-        choices=cod_sub_group,
+    subgroup = models.CharField(
         max_length=3,
         null=True,
         blank=True
@@ -53,8 +56,8 @@ class Contract(models.Model):
     supply_voltage = models.DecimalField(
         decimal_places=2,
         max_digits=10,
-        null=True,
-        blank=True
+        null=False,
+        blank=False
     )
 
     peak_contracted_demand_in_kw = models.DecimalField(

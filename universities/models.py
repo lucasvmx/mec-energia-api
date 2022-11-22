@@ -45,7 +45,7 @@ class University(models.Model):
                 start_date = data_contract['start_date'],
                 end_date = data_contract['end_date'],
                 tariff_flag = data_contract['tariff_flag'],
-                sub_group = data_contract['sub_group'],
+                subgroup = data_contract['subgroup'],
                 supply_voltage = data_contract['supply_voltage'],
                 peak_contracted_demand_in_kw = data_contract['peak_contracted_demand_in_kw'],
                 off_peak_contracted_demand_in_kw = data_contract['off_peak_contracted_demand_in_kw'],
