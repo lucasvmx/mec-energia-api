@@ -22,11 +22,8 @@ class UniversityViewSet(viewsets.ModelViewSet):
         obj = self.get_object()
         data = request.data
 
-        if not data.get("consumer_unit"):
-            raise Exception("Is necessary the data for create Consumer Unit")
-
-        if not data.get("contract"):
-            raise Exception("Is necessary the data for create Contract")
+        if not data.get("consumer_unit") or not data.get("contract"):
+            raise Exception("Is necessary the data for create Consumer Unit and/or Contract")
 
         try:
             obj.create_consumer_unit_and_contract(data['consumer_unit'], data['contract'])
