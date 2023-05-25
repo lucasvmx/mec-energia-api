@@ -171,7 +171,7 @@ class EnergyBill(models.Model):
     energy_bill_file = models.FileField(
         validators=[
             FileExtensionValidator(allowed_extensions=[
-                                   'pdf', 'doc', 'ppt', 'xlsx', 'png', 'jpg', 'jpeg'])
+                                   'pdf', 'doc', 'xlsx', 'png', 'jpg', 'jpeg'])
         ],
         max_length=None,
         null=True,
