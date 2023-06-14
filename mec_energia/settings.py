@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'contracts',
     'tariffs',
     'recommendation',
+    'mec_energia_logger',
 ]
 
 MIDDLEWARE = [
