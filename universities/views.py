@@ -9,6 +9,10 @@ from users.requests_permissions import RequestsPermissions
 from users.models import CustomUser
 from . import serializers
 
+from mec_energia_logger.serializers import LoggerSerializer
+from mec_energia_logger.models import Logger
+from datetime import datetime
+
 class UniversityViewSet(viewsets.ModelViewSet):
     queryset = University.objects.all()
     serializer_class = serializers.UniversitySerializer
@@ -19,10 +23,20 @@ class UniversityViewSet(viewsets.ModelViewSet):
 
         try:
             RequestsPermissions.check_request_permissions(request.user, user_types_with_permission, None)
+
         except Exception as error:
             return Response({'detail': f'{error}'}, status.HTTP_401_UNAUTHORIZED)
-            
+
+        log_data = {
+            'operation': Logger.CREATE,
+            'time_stamp': datetime.now(),
+            'user': self.request.user,
+            'item_type': self.__class__.__name__,
+        }
+        Logger.objects.create(**log_data)
+
         return super().create(request, *args, **kwargs)
+
 
     def update(self, request, *args, **kwargs):
         user_types_with_permission = RequestsPermissions.super_user_permissions
@@ -32,6 +46,14 @@ class UniversityViewSet(viewsets.ModelViewSet):
             RequestsPermissions.check_request_permissions(request.user, user_types_with_permission, university.id)
         except Exception as error:
             return Response({'detail': f'{error}'}, status.HTTP_401_UNAUTHORIZED)
+
+        log_data = {
+            'operation': Logger.UPDATE,
+            'time_stamp': datetime.now(),
+            'user': self.request.user,
+            'item_type': self.__class__.__name__,
+        }
+        Logger.objects.create(**log_data)
 
         return super().update(request, *args, **kwargs)
 
@@ -76,6 +98,14 @@ class ConsumerUnitViewSet(viewsets.ModelViewSet):
         except Exception as error:
             return Response({'detail': f'{error}'}, status.HTTP_401_UNAUTHORIZED)
             
+        log_data = {
+            'operation': Logger.CREATE,
+            'time_stamp': datetime.now(),
+            'user': self.request.user,
+            'item_type': self.__class__.__name__,
+        }
+        Logger.objects.create(**log_data)
+
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):

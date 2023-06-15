@@ -42,6 +42,6 @@ class Logger(models.Model):
         help_text=('Usuário responsável pela alteração da aplicação')    
     )
 
-    item_type = models.BooleanField(
-        default=True
+    item_type = models.CharField(
+        max_length=100,
     )
