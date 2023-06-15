@@ -2,7 +2,7 @@ from django.db import models
 from django.forms.models import model_to_dict
 
 from datetime import date
-from contracts.models import Contract, EnergyBill
+from users.models import CustomUser
 
 class Logger(models.Model):
     CREATE = "C"
@@ -20,16 +20,17 @@ class Logger(models.Model):
         null=False,
         max_length=1,
         choices=OPERATION_TYPES,
-        verbose_name=_('Operação'),
-        help_text=_(
+        verbose_name=('Operação'),
+        help_text=(
             'Tipo de operação realizada: Create(C), Read(R), Update(U), Delete(D)')
     )
 
-    time_stamp = models.CharField(
+    time_stamp = models.DateTimeField(
+        auto_now_add=False,
         null=False,
         max_length=50,
-        verbose_name=_('Horário'),
-        help_text=_('Horário em que a alteração foi feita'),
+        verbose_name=('Horário'),
+        help_text=('Horário em que a alteração foi feita'),
     )
 
     user = models.ForeignKey(
@@ -38,8 +39,7 @@ class Logger(models.Model):
         null=False,
         on_delete=models.PROTECT,
         verbose_name='Usuário',
-        help_text=_(
-            'Usuário responsável pela alteração da aplicação')    
+        help_text=('Usuário responsável pela alteração da aplicação')    
     )
 
     item_type = models.BooleanField(
