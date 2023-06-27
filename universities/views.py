@@ -27,11 +27,14 @@ class UniversityViewSet(viewsets.ModelViewSet):
         except Exception as error:
             return Response({'detail': f'{error}'}, status.HTTP_401_UNAUTHORIZED)
 
+        last_university = University.objects.latest('id')
+
         log_data = {
             'operation': Logger.CREATE,
             'time_stamp': datetime.now(),
             'user': self.request.user,
             'item_type': self.__class__.__name__,
+            'id_item_type': last_university.id,
         }
         Logger.objects.create(**log_data)
 
@@ -52,6 +55,7 @@ class UniversityViewSet(viewsets.ModelViewSet):
             'time_stamp': datetime.now(),
             'user': self.request.user,
             'item_type': self.__class__.__name__,
+            'id_item_type': university.id,
         }
         Logger.objects.create(**log_data)
 
@@ -103,6 +107,7 @@ class ConsumerUnitViewSet(viewsets.ModelViewSet):
             'time_stamp': datetime.now(),
             'user': self.request.user,
             'item_type': self.__class__.__name__,
+            'id_item_type': body_university_id,
         }
         Logger.objects.create(**log_data)
 
