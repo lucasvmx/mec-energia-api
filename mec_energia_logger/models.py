@@ -39,9 +39,16 @@ class Logger(models.Model):
         null=False,
         on_delete=models.PROTECT,
         verbose_name='Usuário',
-        help_text=('Usuário responsável pela alteração da aplicação')    
+        help_text=('Usuário responsável pela alteração da aplicação')
     )
 
     item_type = models.CharField(
-        max_length=100,
+        max_length=80,
+        help_text=('Classe responsável pela alteração'),
+    )
+
+    id_item_type = models.CharField(
+        max_length=80,
+        null=False,
+        help_text=('Id relacionado a classe usada na alteração'),
     )
