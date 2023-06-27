@@ -122,6 +122,15 @@ class ConsumerUnitViewSet(viewsets.ModelViewSet):
         except Exception as error:
             return Response({'detail': f'{error}'}, status.HTTP_401_UNAUTHORIZED)
 
+        log_data = {
+            'operation': Logger.UPDATE,
+            'time_stamp': datetime.now(),
+            'user': self.request.user,
+            'item_type': self.__class__.__name__,
+            'id_item_type': consumer_unit.university.id,
+        }
+        Logger.objects.create(**log_data)
+
         return super().update(request, *args, **kwargs)
 
     @swagger_auto_schema(
