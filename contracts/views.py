@@ -14,13 +14,17 @@ from users.requests_permissions import RequestsPermissions
 
 from utils.subgroup_util import Subgroup
 
+from mec_energia_logger.serializers import LoggerSerializer
+from mec_energia_logger.models import Logger
+from datetime import datetime
+
 
 class ContractViewSet(viewsets.ModelViewSet):
     queryset = models.Contract.objects.all()
     serializer_class = serializers.ContractSerializer
 
     def create(self, request, *args, **kwargs):
-        user_types_with_permission = RequestsPermissions.university_user_permissions
+        # user_types_with_permission = RequestsPermissions.university_user_permissions
 
         body_consumer_unit_id = request.data['consumer_unit']
 
@@ -35,6 +39,17 @@ class ContractViewSet(viewsets.ModelViewSet):
             RequestsPermissions.check_request_permissions(request.user, user_types_with_permission, university_id)
         except Exception as error:
             return Response({'detail': f'{error}'}, status.HTTP_401_UNAUTHORIZED)
+
+        last_contract = models.Contract.objects.latest('id')
+
+        log_data = {
+            'operation': Logger.CREATE,
+            'time_stamp': datetime.now(),
+            'user': self.request.user,
+            'item_type': self.__class__.__name__,
+            'id_item_type': last_contract.id,
+        }
+        Logger.objects.create(**log_data)
 
         return super().create(request, *args, **kwargs)
 
