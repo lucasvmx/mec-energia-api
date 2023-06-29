@@ -12,6 +12,10 @@ from .models import CustomUser, UniversityUser
 from .serializers import ListUsersParamsSerializer, RetrieveUniversityUserSerializer, UniversityUserSerializer, FavoriteConsumerUnitActionSerializer, CustomUserSerializer, ChangeUniversityUserTypeSerializer
 from .requests_permissions import RequestsPermissions
 
+from mec_energia_logger.serializers import LoggerSerializer
+from mec_energia_logger.models import Logger
+from datetime import datetime
+
 
 class CustomUserViewSet(ModelViewSet):
     queryset = CustomUser.objects.all()
@@ -59,6 +63,17 @@ class UniversityUsersViewSet(ModelViewSet):
         except Exception as error:
             return Response({'detail': f'{error}'}, status.HTTP_401_UNAUTHORIZED)
             
+        last_user = UniversityUser.objects.latest('id')
+
+        log_data = {
+            'operation': Logger.CREATE,
+            'time_stamp': datetime.now(),
+            'user': self.request.user,
+            'item_type': self.__class__.__name__,
+            'id_item_type': last_user.id,
+        }
+        Logger.objects.create(**log_data)
+
         return super().create(request, *args, **kwargs)
 
     def get_serializer_class(self):
