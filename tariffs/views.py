@@ -51,6 +51,15 @@ class DistributorViewSet(ModelViewSet):
                     'consumer_units_ids': blocking_units_ids,
                 }, status=status.HTTP_400_BAD_REQUEST)
 
+        log_data = {
+            'operation': Logger.DELETE,
+            'time_stamp': datetime.now(),
+            'user': self.request.user,
+            'item_type': self.__class__.__name__,
+            'id_item_type': distributor.id,
+        }
+        Logger.objects.create(**log_data)
+
         Distributor.objects.filter(pk=distributor.id).delete()
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
