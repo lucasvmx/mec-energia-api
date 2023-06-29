@@ -64,6 +64,15 @@ class ContractViewSet(viewsets.ModelViewSet):
         except Exception as error:
             return Response({'detail': f'{error}'}, status.HTTP_401_UNAUTHORIZED)
 
+        log_data = {
+            'operation': Logger.UPDATE,
+            'time_stamp': datetime.now(),
+            'user': self.request.user,
+            'item_type': self.__class__.__name__,
+            'id_item_type': contract.id,
+        }
+        Logger.objects.create(**log_data)
+
         return super().update(request, *args, **kwargs)
 
     @swagger_auto_schema(query_serializer=serializers.ContractListParamsSerializer)
