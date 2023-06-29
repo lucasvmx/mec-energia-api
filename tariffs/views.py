@@ -18,6 +18,10 @@ from .serializers import DistributorSerializer, BlueAndGreenTariffsSerializer, C
 from users.requests_permissions import RequestsPermissions
 from universities.models import ConsumerUnit
 
+from mec_energia_logger.serializers import LoggerSerializer
+from mec_energia_logger.models import Logger
+from datetime import datetime
+
 class DistributorViewSet(ModelViewSet):
     queryset = Distributor.objects.all()
     serializer_class = DistributorSerializer
@@ -140,6 +144,18 @@ class TariffViewSet(ViewSet):
             return self._handle_integrity_error(error)
         except Exception as e:
             raise e
+
+        last_tariff = Tariff.objects.latest('id')
+        
+        log_data = {
+            'operation': Logger.CREATE,
+            'time_stamp': datetime.now(),
+            'user': self.request.user,
+            'item_type': self.__class__.__name__,
+            'id_item_type': last_tariff.id,
+        }
+        Logger.objects.create(**log_data)
+
         return Response(ser.data, status=status.HTTP_201_CREATED)
 
     def _handle_integrity_error(self, error: IntegrityError):
