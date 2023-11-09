@@ -28,11 +28,12 @@ docker-compose up -d
 Se tudo deu certo, a API do Django REST deve estar acessível em 
 http://localhost:8000.
 
-Além disso, a API também tem seus endpoints documentados no Swagger em
-http://localhost:8000/api/swagger/schema/.
-
-Para ter acesso completo dos dados nos dois links, você precisa criar um 
+Para ter acesso completo dos dados na API, você precisa criar um 
 usuário. Leia como fazer isso em [seed](docs/seed.md#usuário).
+
+Além disso, a API também tem seus endpoints documentados no Swagger em
+http://localhost:8000/api/swagger/schema/. 
+Que para acessar é preciso primeiro entrar com um dos usuários criados em http://localhost:8000/api-auth/login/.
 
 Para derrubar os containers utilize:
 
