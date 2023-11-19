@@ -8,6 +8,9 @@ class CnpjValidator:
 
     @classmethod
     def validate(cls, cnpj: str):
+        if cnpj == "00000000000000":  # Verifique se o CNPJ é igual a zero
+            raise Exception('Invalid CNPJ: CNPJ cannot be all zeros')
+        
         if not cnpj.isdecimal() or len(cnpj) != 14:
             raise Exception('CNPJ must contain exactly 14 numerical digits')
 
@@ -24,6 +27,9 @@ class CnpjValidator:
 
     @staticmethod
     def _verify_digit(multipliers: list[int], base_digits: list[int]) -> int:
+        if all(digit == 0 for digit in base_digits):
+            raise Exception('Invalid CNPJ: CNPJ cannot be all zeros')
+    
         multiplication_results = []
         for mult, cnpj_base_digit in zip(multipliers, base_digits):
             multiplication_results.append(mult * cnpj_base_digit)

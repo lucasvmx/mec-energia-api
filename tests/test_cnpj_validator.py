@@ -11,6 +11,10 @@ invalid_cnpjs_as_params = pytest.mark.parametrize('cnpj', [
     ('11111111111111'),
 ])
 
+invalid_null_cnpjs_as_params = pytest.mark.parametrize('cnpj', [
+    ('00000000000000'),
+])
+
 wrong_length_or_non_numeric_cnpjs_as_params = pytest.mark.parametrize('cnpj', [
     # wrong length
     (''),
@@ -35,6 +39,12 @@ def test_rejects_cnpj_with_non_numeric_digits(cnpj: str):
     assert 'must contain exactly 14 numerical digits' in str(e.value)
 
 @invalid_cnpjs_as_params
+def test_rejects_invalid_cnpjs(cnpj: str):
+    with pytest.raises(Exception) as e:
+        sut(cnpj)
+    assert 'Invalid' in str(e.value)
+
+@invalid_null_cnpjs_as_params
 def test_rejects_invalid_cnpjs(cnpj: str):
     with pytest.raises(Exception) as e:
         sut(cnpj)
