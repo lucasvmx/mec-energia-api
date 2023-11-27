@@ -142,6 +142,7 @@ class EnergyBillViewSet(viewsets.ModelViewSet):
         consumer_unit_id = request.data.get('consumer_unit')
         date_str = request.data.get('date')
         anotacoes = request.data.get('anotacoes', "")
+        address = request.data.get('address', "")
 
         try:
             date = datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -150,6 +151,9 @@ class EnergyBillViewSet(viewsets.ModelViewSet):
 
         if len(anotacoes) > 1000:  #comprimento máximo
             return Response('Anotacoes is too long.', status=status.HTTP_400_BAD_REQUEST)
+
+        if len(address) > 1000:
+            return Response('Endereco is too long.', status = status.HTTP_400_BAD_REQUEST)
 
         if models.EnergyBill.check_energy_bill_month_year(consumer_unit_id, date):
             return Response('There is already an energy bill this month and year for this consumer unit.', status=status.HTTP_400_BAD_REQUEST)
