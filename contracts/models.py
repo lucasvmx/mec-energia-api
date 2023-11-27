@@ -183,6 +183,11 @@ class EnergyBill(models.Model):
         blank=True,
     )
 
+    address = models.TextField(
+        null = True,
+        blank = True
+    )
+
     @classmethod
     def get_energy_bill(cls, consumer_unit_id, month, year):
         try:
